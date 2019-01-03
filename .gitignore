@@ -54,3 +54,6 @@ dkms.conf
 # CMake
 [Bb]uild/
 cmake-build-debug/
+
+# Local editors'
+.vscode/
