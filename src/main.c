@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <poll.h>
 #include <unistd.h>
 
 
@@ -23,33 +24,34 @@ main(void)
     signal(SIGINT, sigint_handler);
     check_locale();
 
-    fd_set rfds;
-    struct timeval tv;
     int    retval;
 
     ssize_t nread;
     char    buf[BUFSIZ];
 
-    FD_ZERO(&rfds);
-    FD_SET(STDIN_FILENO, &rfds);
-
-    tv.tv_sec  = 5;
-    tv.tv_usec = 0;
+    struct pollfd fdset = {
+        .fd = STDIN_FILENO,
+        .events = POLLIN
+    };
 
     puts("Hallo, das ist Chita.");
 
-    retval = select(1, &rfds, NULL, NULL, &tv);
-    while (retval)
+    while (1)
     {
+        retval = poll(&fdset, 1, 1000);
+
+        if (!retval)
+        {
+            puts("hhhhhhhhhhh.");
+            continue;
+        }
+            
         nread = 0;
         memset(&buf, 0, BUFSIZ);  /* Flush buffer. */
 
         nread = read(STDIN_FILENO, buf, BUFSIZ);
         puts(buf);
     }
-
-    if (-1 == retval)
-        die("Something wrong with `select()`.");
 
     return EXIT_SUCCESS;
 }
