@@ -42,13 +42,14 @@ main(void)
 
         if (!retval)
         {
-            puts("hhhhhhhhhhh.");
             continue;
         }
 
         ioctl(STDIN_FILENO, FIONREAD, &count);
         get_input(&input_str, STDIN_FILENO, count);
-        puts(input_str);
+
+        idiot_core(input_str);
+        printf("%s\n", input_str);
     }
 
     return EXIT_SUCCESS;
@@ -73,8 +74,6 @@ get_input(char** input_str, int fd, ssize_t count)
         ssize_t pos = index * BUFSIZ;
         nread = read(fd, *input_str + pos, BUFSIZ);
     }
-
-    (*input_str)[count] = '\0';  /* Append suffix flag. */
 }
 
 
@@ -101,7 +100,7 @@ sigint_handler(int signo)
 }
 
 
-void idiot_core(char *input)
+void idiot_core(char* input)
 {
     if (NULL == input)
         return;
@@ -111,4 +110,21 @@ void idiot_core(char *input)
         puts("Nichts da!");
         return;
     }
+
+    char* tail = strchr(input, '\n');
+    if (tail)
+        *tail = '\0';
+
+    tail = strstr(input, "吗");
+    if (!tail)
+        tail = strstr(input, "么");
+
+    if (!tail)
+        tail = strstr(input, "？");
+
+    if (!tail)
+        tail = strstr(input, "?");
+
+    if (tail)
+        *tail = '\0';
 }
